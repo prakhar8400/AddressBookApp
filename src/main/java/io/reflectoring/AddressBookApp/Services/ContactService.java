@@ -21,6 +21,7 @@ public class ContactService {
         contact.setEmail(contactDTO.getEmail());
         contact.setPhone(contactDTO.getPhone());
 
+        //UC3
         Contact savedContact = contactRepository.save(contact);
 
         return new ContactDTO(savedContact.getId(), savedContact.getName(), savedContact.getEmail(), savedContact.getPhone());
