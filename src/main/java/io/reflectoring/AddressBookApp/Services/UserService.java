@@ -4,6 +4,7 @@ import io.reflectoring.AddressBookApp.DTOs.UserDTO;
 import io.reflectoring.AddressBookApp.Entities.User;
 import io.reflectoring.AddressBookApp.Interfaces.IUserService;
 import io.reflectoring.AddressBookApp.Repository.UserRepository;
+import io.reflectoring.AddressBookApp.Security.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +21,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JWTUtil jwtUtil; // Injecting JWT Util Class
 
     @Override
     public String registerUser(UserDTO userDTO) {
@@ -48,7 +52,10 @@ public class UserService implements IUserService {
             User user = userOptional.get();
             if (passwordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
                 log.info("User login successful");
-                return "Login successful";
+
+                // ✅ Generating JWT Token after successful login
+                String token = jwtUtil.generateToken(user.getEmail());
+                return token; // Returning JWT Token
             } else {
                 log.error("Invalid credentials");
                 return "Invalid credentials";
@@ -59,4 +66,3 @@ public class UserService implements IUserService {
         }
     }
 }
-

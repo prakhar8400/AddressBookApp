@@ -4,6 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
 
 @Entity
 @Data
@@ -17,5 +20,9 @@ public class User {
 
     private String email;
     private String password;
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return java.util.List.of();
+    }
 }
 
