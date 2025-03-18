@@ -1,6 +1,6 @@
 package io.reflectoring.AddressBookApp.Controllers;
 
-import io.reflectoring.AddressBookApp.Services.EmailService;
+import io.reflectoring.AddressBookApp.Services.RabbitMQProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import java.util.Map;
 public class EmailController {
 
     @Autowired
-    private EmailService emailService;
+    private RabbitMQProducer rabbitMQProducer;
 
     @PostMapping("/send")
     public ResponseEntity<String> sendEmail(@RequestBody(required = false) Map<String, String> emailData) {
@@ -21,12 +21,9 @@ public class EmailController {
             return ResponseEntity.badRequest().body("Missing required fields: 'to', 'subject', or 'message'");
         }
 
-        String to = emailData.get("to");
-        String subject = emailData.get("subject");
-        String message = emailData.get("message");
-
-        emailService.sendEmail(to, subject, message);
-        return ResponseEntity.ok("Email sent successfully to " + to);
+        // Publish message to RabbitMQ
+        rabbitMQProducer.sendMessage(emailData);
+        return ResponseEntity.ok("Email request sent to queue successfully!");
     }
 
     // Handle missing request parameters globally
